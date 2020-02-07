@@ -1,0 +1,14 @@
+# Ignore everything in this directory
+*
+# Except this files
+!.gitignore
+!BVArray.m
+!CVArray.m
+!DataParserNumBs.m
+!mmWaveBs.m
+!sub6Bs.m
+!DataParserDistBs.m
+!sub6G_Serving.m
+!LatencyDataParser.m
+!DataDistanceAnalysis.m
+!DataParserCapacityQoS.m
