@@ -107,6 +107,7 @@ s6_CapacityArray{2} = zeros(simulation_length,length(veh{2}));
 s6_CapacityArray{1} = zeros(simulation_length,length(veh{1}));
 
 %% QoS Capacity requirement
+% Because of greedy scheduler, I need these before simulation
 qos_capacity_requirements = [1.28,2.56,2.88,10,14,29]*10^6; % per second, per vehicle use case requirements
 % All requirements are Mbps
 % Cooperative maneuver 1.28
@@ -195,16 +196,6 @@ while veh{numLane}(1).car_end < AoI_start
                 isCapacityAchieved{this_vehicle_lane,serviceIdx}(now_simulation,vehicles_2b_served(this_vehicle))=-1;
             end
         end
-        % if all offloaded vehicles are succesfully served in this use case
-        % that means they can be served in any remaining use case as the
-        % use case capacity requirements are sorted and we start looking
-        % from the most demandin use case to least demanding use case.
-%         if all_served == 1
-%             for rem_use_cases = serviceIdx:-1:1
-%                 isCapacityAchieved{this_vehicle_lane,serviceIdx}(now_simulation,vehicles_2b_served(this_vehicle))=1;
-%             end
-%             break;
-%         end
     end
     
     
