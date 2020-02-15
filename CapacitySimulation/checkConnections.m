@@ -6,9 +6,14 @@ tempCapacity = -1 * ones(1,length(veh{CV_lane}));
 for Cm_idx = Cm_inRange_idx_start : Cm_inRange_idx_end
     %antenna position of communicating vehicle
     Cm_veh_pos = veh{CV_lane}(Cm_idx).x_pos;
-    %LOS coverage range for this antenna
-    cov_range_start = Cm_veh_pos-mm_coverage;
-    cov_range_end = Cm_veh_pos+mm_coverage;
+    %     %LOS coverage range for this antenna
+    %     cov_range_start = Cm_veh_pos-mm_coverage;
+    %     cov_range_end = Cm_veh_pos+mm_coverage;
+    
+    %% Possible fix for dip issue
+    cov_range_start = Cm_veh_pos-veh{CV_lane}(Cm_idx).mm_coverage;
+    cov_range_end = Cm_veh_pos+veh{CV_lane}(Cm_idx).mm_coverage;
+    
     % mmWave Base Stations in this coverage area
     inRange_Bs = mmWaveBsArray(mmWaveBsArray.find_Bs_in_range(cov_range_start,cov_range_end));
     Cv_mmBs_distance = veh{CV_lane}(Cm_idx).computeBsDistance(inRange_Bs);
@@ -23,13 +28,15 @@ for Cm_idx = Cm_inRange_idx_start : Cm_inRange_idx_end
         if ~isempty(possibleBlockers)
             Cv_mmBs_distance(Bs_idx) = -1;
         else
-            if Cv_mmBs_distance(Bs_idx)<min_dist
+            %             if (Cv_mmBs_distance(Bs_idx)<min_dist)
+            %%  Possible fix for dip issue
+            if (Cv_mmBs_distance(Bs_idx)<min_dist) && (Cv_mmBs_distance(Bs_idx)<veh{CV_lane}(Cm_idx).mm_coverage)
                 min_dist = Cv_mmBs_distance(Bs_idx);
                 min_idx = Bs_idx;
             end
         end
     end
-%     [min_dist,min_idx]=min(Cv_mmBs_distance([Cv_mmBs_distance > 0]));
+    %     [min_dist,min_idx]=min(Cv_mmBs_distance([Cv_mmBs_distance > 0]));
     if (min_dist<9998)
         tempDistance(1,Cm_idx) = min_dist;
         tempAssosiation(1,Cm_idx) = mmWaveBsArray.find_idx_in_main_array(inRange_Bs(min_idx));

@@ -9,7 +9,7 @@ if whereisCV>numLane
     exit
 end
 
-for ll=2:3
+for ll=3
 
 Duration = cell(length(height),length(dist));
 Blockage_Probability = cell(length(height),length(dist));

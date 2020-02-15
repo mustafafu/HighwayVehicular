@@ -16,8 +16,8 @@ AI = getenv('SLURM_ARRAY_TASK_ID')
 if(isempty(AI))
     AI='NoAi';
     %mmWave BS properties
-    mm_hBs = 2; % BS antenna height (in meters) BS antenna height (in meters) 8->1 Lane 5->2 Lanes  2->3 Lanes
-    mm_seperation = 300; % how many meters between consecutive base stations
+    mm_hBs = 4; % BS antenna height (in meters) BS antenna height (in meters) 8->1 Lane 5->2 Lanes  2->3 Lanes
+    mm_seperation = 200; % how many meters between consecutive base stations
     % basically this is a new paramater for numBs in coverage region.
     mm_coverage = 200; %meter line of sight LOS path loss tolerable distance
     % num_bs in coverage area is mm_coverage * 2 / mm_seperation

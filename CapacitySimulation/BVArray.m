@@ -54,7 +54,9 @@ classdef BVArray < handle
                 for ii = how_many:-1:1
                     obj(ii).speed = speed;
                     obj(ii).y_pos = y_pos;
-                    obj(ii).mm_coverage = mm_coverage;
+                    %% Possible fix for dip issue
+                    obj(ii).mm_coverage = mm_coverage + normrnd(0,sqrt(mm_coverage/2));
+%                     obj(ii).mm_coverage = mm_coverage;
                     obj(ii).car_height = carHeights(ii);
                     obj(ii).car_start = carStartPositions(ii);
                     obj(ii).car_end = carEndPositions(ii);
