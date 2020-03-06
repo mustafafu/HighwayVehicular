@@ -11,7 +11,8 @@ This repository includes the code needed to reproduce the simulation results in
 To run the simulation, just run
 
 ```
-SimulationMain
+cd CapacitySimulation
+SimulateCapacityAllLanes.m
 ```
 
 in either MATLAB or Octave. The simulation will generate two data files:
@@ -26,5 +27,6 @@ These can be used to reproduce Figure 5a and 5b in the referenced paper.
 To run on NYU's High Performance Computing cluster, run
 
 ```
-sbatch --array=0-150 submit.sbatch
+cd CapacitySimulation
+sbatch --array=0-959 submitAllLanes.sbatch
 ```
