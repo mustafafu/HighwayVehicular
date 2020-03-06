@@ -43,7 +43,7 @@ s6_coverage = 0.5*(AoI_end-AoI_start) + AoI_start; %put the sub 6Ghz at the cent
 BSTxPower = 46 ; %dBm
 VehTxPower = 24; %dBm
 % We are interested in uplink capacity so we will use VehTxPower as power.
-TxPower=VehTxPower; 
+TxPower=VehTxPower;
 Noise = -173.9 ; %dBm per hertz
 fc = 673 ; % Hz
 BW = 20 * 1e6; % Hz
@@ -107,6 +107,30 @@ s6_CapacityArray{3} = zeros(simulation_length,length(veh{3}));
 s6_CapacityArray{2} = zeros(simulation_length,length(veh{2}));
 s6_CapacityArray{1} = zeros(simulation_length,length(veh{1}));
 
+%% QoS Capacity requirement
+% Because of greedy scheduler, I need these before simulation
+% once we have downlink capacity requirements only we can change these
+% numbers
+qos_capacity_requirements = [1.28,2.56,2.88,10,14,29]*10^6; % per second, per vehicle use case requirements
+% All requirements are Mbps
+% Cooperative maneuver 1.28
+% Cooperative Safety(20VRU) 2.56 (128Kbps * 20)
+% Autonomous Navigation 2.88
+% Cooperative perception/sensing 10/14/29
+% Remote Driving -> Trajectory 1.28
+% Remote Driving -> 14-29
+
+%% Array for keeping track of if the QoS requirement of capacity is achieved or not
+% 1 is achieved, -1 is not achieved, 0 means the vehicle is not in region of interest at that simulation time step.
+isCapacityAchieved = cell(3,length(qos_capacity_requirements));
+for CV_lane = 1:numLane
+    for serviceIdx = 1:length(qos_capacity_requirements)
+        isCapacityAchieved{CV_lane,serviceIdx} = zeros(simulation_length,length(veh{CV_lane}));
+    end
+end
+
+
+
 %% Simulation Running here
 tic
 now_simulation = 0;
@@ -125,6 +149,59 @@ while veh{numLane}(1).car_end < AoI_start
         % for each communicating vehicle in the region
         [DistanceArray{CV_lane}(now_simulation,:),AssosiationArray{CV_lane}(now_simulation,:),s6_CapacityArray{CV_lane}(now_simulation,:)] = checkConnections(veh,mmWaveBsArray,sub6GBs,Cm_inRange_idx_start,Cm_inRange_idx_end,CV_lane,mm_coverage);
     end
+    
+    % for vehicles that are ofloaded to the sub6Ghz BS, scheduling the
+    % service in a greedy manner, i.e the best channel vehicle is served
+    % first then the second best etc,  until all vehicles are served or the
+    % duration of simulation time step is depleted
+    offloaded_vehicle_idx = cell(1,numLane);
+    achieved_capacities = [];
+    for CV_lane = 1:numLane
+        for serviceIdx = 1:length(qos_capacity_requirements)
+            isCapacityAchieved{CV_lane,serviceIdx}(now_simulation,:) = (AssosiationArray{CV_lane}(now_simulation,:) > 0);
+        end
+        offloaded_vehicle_idx{CV_lane} = find(AssosiationArray{CV_lane}(now_simulation,:) == -1);
+        achieved_capacities = [achieved_capacities, s6_CapacityArray{CV_lane}(now_simulation,offloaded_vehicle_idx{CV_lane})];
+    end
+    vehicles_2b_served = cell2mat(offloaded_vehicle_idx);
+    [sorted_capacities, sorted_veh_idx] = sort(achieved_capacities,'descend');
+    %starting from most demanding service, if this service is satisfied for
+    %all the vehicles remaining services can be satisfied at that time
+    %instance
+    for serviceIdx = length(qos_capacity_requirements):-1:1
+        all_served = 1;
+        requirement = qos_capacity_requirements(serviceIdx);
+        utilization = 0;
+        currently_serving = 1;
+        while (utilization < 1) && (currently_serving < length(sorted_veh_idx))
+            if (utilization + requirement/sorted_capacities(currently_serving)) < 1
+                utilization = utilization + requirement/sorted_capacities(currently_serving);
+                currently_serving = currently_serving+1;
+            else
+                break;
+            end
+        end
+        for veh_idx = 1:length(sorted_veh_idx)
+            this_vehicle = sorted_veh_idx(veh_idx);
+            vehicle_change_locations = zeros(numLane,1);
+            for CV_lane=1:numLane
+                vehicle_change_locations(CV_lane)= length(offloaded_vehicle_idx{CV_lane});
+            end
+            vehicle_change_locations = cumsum(vehicle_change_locations);
+            this_vehicle_lane = find(this_vehicle <= vehicle_change_locations,1);
+%             disp(this_vehicle)
+%             disp(this_vehicle_lane)
+%             disp(vehicles_2b_served(this_vehicle))
+            if veh_idx <= currently_serving
+                isCapacityAchieved{this_vehicle_lane,serviceIdx}(now_simulation,vehicles_2b_served(this_vehicle))=1;
+            else
+                all_served=0;
+                isCapacityAchieved{this_vehicle_lane,serviceIdx}(now_simulation,vehicles_2b_served(this_vehicle))=-1;
+            end
+        end
+    end
+    
+    
     %Update the positions of the vehicles
     veh{1}.moveCar(delta);
     veh{2}.moveCar(delta);

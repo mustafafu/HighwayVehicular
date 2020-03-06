@@ -9,17 +9,19 @@ classdef mmWaveBs
     methods
         function obj = mmWaveBs(xstart,xend,seperation,mm_y_pos,mm_hBs,mm_coverage)
             if nargin ~= 0
-                how_many = floor((xend-xstart)/seperation)+5;
+                how_many = floor((xend-xstart)/seperation)+2;
                 obj(how_many,1) = obj;
                 obj(1).x_pos = xstart;
                 obj(1).y_pos = mm_y_pos;
                 obj(1).height = mm_hBs;
                 obj(1).R_coverage = mm_coverage;
                 for ii = 2:how_many
-                    distance = seperation+normrnd(0,sqrt(seperation/2));
-                    while (seperation-distance) < 0
-                        distance = seperation+normrnd(0,sqrt(seperation/2));
-                    end
+                    distance = seperation;
+%                     distance = seperation+normrnd(0,sqrt(seperation/2));
+%                     while (seperation-distance) < 0
+%                         distance = seperation;
+% %                         distance = seperation+normrnd(0,sqrt(seperation/2));
+%                     end
                     obj(ii).x_pos = obj(ii-1).x_pos+distance;
                     obj(ii).y_pos = mm_y_pos;
                     obj(ii).height = mm_hBs;
