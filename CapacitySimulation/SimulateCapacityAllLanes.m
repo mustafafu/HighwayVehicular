@@ -134,7 +134,7 @@ toc
 
 save_file_string = ['data/distBS_', num2str(mm_seperation), '-heightBS_', num2str(mm_hBs), '-CapacityAssocDistanceAllLanes',AI];
 save_file_string = strrep(save_file_string,'.',',')
-save(save_file_string, 'AssosiationArray','DistanceArray','s6_CapacityArray','isCapacityAchieved','mmWaveBsArray','veh','delta','qos_capacity_requirements');
+save(save_file_string, 'AssosiationArray','DistanceArray','s6_CapacityArray','mmWaveBsArray','veh','delta');
 
 
 
