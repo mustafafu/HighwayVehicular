@@ -1,3 +1,4 @@
+tic
 %% Simulation Environment Parameters
 delta = 3; % simulation granularity in ms
 AoI_start = 0; % area of interest start position
@@ -11,7 +12,7 @@ if(isempty(AI))
     AI='3';
     %mmWave BS properties
     mm_hBs = 4; % BS antenna height (in meters) BS antenna height (in meters) 8->1 Lane 5->2 Lanes  2->3 Lanes
-    mm_seperation = 200; % how many meters between consecutive base stations
+    mm_seperation = 75; % how many meters between consecutive base stations
     % basically this is a new paramater for numBs in coverage region.
     mm_coverage = 200; %meter line of sight LOS path loss tolerable distance
     % num_bs in coverage area is mm_coverage * 2 / mm_seperation
@@ -97,7 +98,7 @@ veh{3} = BVArray(-AoI_end,AoI_end,lambda_vehicle,mm_coverage,Vc,y_pos(3));
 veh{2} = BVArray(-AoI_end,AoI_end,lambda_vehicle,mm_coverage,Vb_2,y_pos(2));
 veh{1} = BVArray(-AoI_end,AoI_end,lambda_vehicle,mm_coverage,Vb_1,y_pos(1));
 %% Simulation Starts here
-tic
+
 %just moving the vehicles -Aoi to 0 takes about 100 seconds
 simulation_time = (AoI_start - veh{3}(1).car_end)/veh{3}(1).speed;
 simulation_length = floor(simulation_time / delta);
@@ -116,7 +117,6 @@ s6_CapacityArray{2} = zeros(simulation_length,length(veh{2}));
 s6_CapacityArray{1} = zeros(simulation_length,length(veh{1}));
 
 %% Simulation Running here
-tic
 now_simulation = 0;
 while veh{numLane}(1).car_end < AoI_start
     now_simulation = now_simulation+1;
@@ -138,7 +138,7 @@ while veh{numLane}(1).car_end < AoI_start
     veh{2}.moveCar(delta);
     veh{3}.moveCar(delta);
 end
-toc
+
 
 
 Parameters = struct('simulation_granularity_ms',delta,...%(ms)
@@ -168,6 +168,7 @@ save_file_string = ['data/distBS_', num2str(mm_seperation), '-heightBS_', num2st
 save_file_string = strrep(save_file_string,'.',',')
 save(save_file_string, 'AssosiationArray','DistanceArray','s6_CapacityArray','mmWaveBsArray','veh','delta','Parameters');
 
+toc
 
 
 
