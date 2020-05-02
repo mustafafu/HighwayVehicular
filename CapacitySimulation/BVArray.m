@@ -14,25 +14,45 @@ classdef BVArray < handle
         function obj = BVArray(x_start,x_end,lambda,mm_coverage,speed,y_pos)
             if nargin ~= 0
                 % we will distribute vehicles for a strech
-                % (when area of interest is btw 0 to 4km) 
-                % around -10km to + 4km, so that we will have 14 km of 
+                % (when area of interest is btw 0 to 4km)
+                % around -10km to + 4km, so that we will have 14 km of
                 % vehicles coming to the area of interest
                 total_strech = x_end - x_start;
-                approx_matrix_size = ceil(total_strech / (1/lambda)); 
+                approx_matrix_size = ceil(total_strech / (1/lambda));
                 distanceVec = exprnd(1/lambda,1,approx_matrix_size);
-                %now we dont generate car lengths exponentially but from real world statistics 
-                % for vehicles on NYS thruway
-                lengths = [4.5, 9.5, 13.25];
-                lengthProb = [0.855, 0.855+0.017, 0.855+0.017+0.128];
-                H = rand(1, approx_matrix_size); % CDF to generate different types of vehicles
-                % H1-H3 are the masks indicating vehicle type, we have 3 types of vehicles
-                % refer to NYS types 2H, 2L 5L etc etc.
-                H1 = (H <= lengthProb(1)) ;
-                H2 = (H <= lengthProb(2) & H > lengthProb(1)) ;
-                H3 = (H <= lengthProb(3) & H > lengthProb(2)) ;
-                %carLengths = H1* lengths(1) + H2*lengths(2) + H3* lengths(3); % length of vehicles
-                carHeights = H1.*normrnd(2.0, 0.1, [1, approx_matrix_size]) + H2.*normrnd(2.4, 0.1, [1, approx_matrix_size]) + H3.*normrnd(3.3, 0.15, [1, approx_matrix_size]);
-                carLengths = H1.*normrnd(lengths(1), 1, [1, approx_matrix_size]) + H2.*normrnd(lengths(2), 1, [1, approx_matrix_size]) + H3.*normrnd(lengths(3), 1, [1, approx_matrix_size]);
+                %now we dont generate car lengths exponentially but from real world statistics
+                % We have 5 vehicle classes. See
+                % https://docs.google.com/spreadsheets/d/1zVJ7LzDxbMI70hdvk_Qo-tDJyLVL9hnRRxhgTWmrMHM/edit?usp=sharing
+                % we want to compute the probability that a
+                % vehicle is higher than the critical height at that lane.
+                
+                % Class length
+                lengths = [  4.37,    4.09,  3.3,    12.19,    16.5 ; 
+                            4.8400, 4.9150, 5.0300, 15.2400, 17.3200;
+                             5.31,    5.74,  6.76,   18.29,    18.14];
+                length_sigmas = [0.1566666667, 0.275, 0.5766666667, 1.016666667, 0.2733333333];
+                % Class height
+                heights = [1.4,  1.52,  1.73,  3.96,  4;
+                           1.46,  1.74,  2.32,  4.19,  4.135;
+                            1.52,   1.96,   2.9,   4.42,   4.27];
+                height_sigmas = [0.02, 0.07333333333, 0.1933333333, 0.07666666667, 0.045];
+                % Class probabilities
+                vehicleProb = [0.4022268255, 0.4022268255, 0.06385292595, 0.008907301916, 0.1227861212];
+                % taking random class samples with corresponding probabilities
+                Prob = cumsum([0 vehicleProb]);
+                [~,~,H] = histcounts(rand(1, approx_matrix_size),Prob);
+                
+                % we will get height and length of the random sampled class using H as a
+                % mask matrix.
+                carHeights = zeros(1, approx_matrix_size);
+                carLengths = zeros(1, approx_matrix_size);
+                for idx_class = 1:length(height_sigmas)
+                    height_class_range = [heights(1,idx_class) heights(3,idx_class)] - heights(2,idx_class);
+                    length_class_range = [lengths(1,idx_class) lengths(3,idx_class)] - lengths(2,idx_class);
+                    carHeights = carHeights + (H==idx_class).* (heights(2,idx_class) + TruncatedGaussian(height_sigmas(idx_class),height_class_range, size(carHeights)));
+                    carLengths = carLengths + (H==idx_class).* (lengths(2,idx_class) + TruncatedGaussian(length_sigmas(idx_class),length_class_range, size(carLengths)));
+                end
+                
                 shiftedSum = [zeros(1,1) distanceVec(:,1:end-1)] + carLengths;
                 carStartPositions = cumsum(shiftedSum,2); % ending positions of the vehicles on each lane
                 carEndPositions = carStartPositions - carLengths; % starting position of the vehicles on eacl lane
@@ -56,7 +76,7 @@ classdef BVArray < handle
                     obj(ii).y_pos = y_pos;
                     %% Possible fix for dip issue
                     obj(ii).mm_coverage = mm_coverage + normrnd(0,sqrt(mm_coverage/2));
-%                     obj(ii).mm_coverage = mm_coverage;
+                    %                     obj(ii).mm_coverage = mm_coverage;
                     obj(ii).car_height = carHeights(ii);
                     obj(ii).car_start = carStartPositions(ii);
                     obj(ii).car_end = carEndPositions(ii);

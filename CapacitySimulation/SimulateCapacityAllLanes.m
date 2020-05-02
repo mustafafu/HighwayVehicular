@@ -1,9 +1,3 @@
-
-% Shuffle RNG if running in MATLAB, not Octave
-if ~exist ('OCTAVE_VERSION', 'builtin')
-    rng('shuffle');
-end
-
 %% Simulation Environment Parameters
 delta = 3; % simulation granularity in ms
 AoI_start = 0; % area of interest start position
@@ -14,7 +8,7 @@ AoI_end = 4000; % area of interest end position
 %% Base Station Properties
 AI = getenv('SLURM_ARRAY_TASK_ID')
 if(isempty(AI))
-    AI='NoAi';
+    AI='3';
     %mmWave BS properties
     mm_hBs = 4; % BS antenna height (in meters) BS antenna height (in meters) 8->1 Lane 5->2 Lanes  2->3 Lanes
     mm_seperation = 200; % how many meters between consecutive base stations
@@ -37,13 +31,19 @@ else
     % basically this is a new paramater for numBs in coverage region.
 end
 
+% Shuffle RNG if running in MATLAB, not Octave
+if ~exist ('OCTAVE_VERSION', 'builtin')
+    rng(str2num(AI),'twister');
+end
+
+
 %sub 6GHz Properties
 s6_hBs = 30; % height
 s6_coverage = 0.5*(AoI_end-AoI_start) + AoI_start; %put the sub 6Ghz at the center
 BSTxPower = 46 ; %dBm
 VehTxPower = 24; %dBm
 % We are interested in uplink capacity so we will use VehTxPower as power.
-TxPower=VehTxPower; 
+TxPower = BSTxPower; 
 Noise = -173.9 ; %dBm per hertz
 fc = 673 ; % Hz
 BW = 20 * 1e6; % Hz
@@ -64,9 +64,17 @@ widthLane = 3.5; % how wide each lane is?
 Vc = 105; % communicating vehicle speed (km/h)
 Vb_2 = 100; % blocking vehicle speed (km/h)
 Vb_1 = 95;
-lambda_vehicle = 0.0343; % 1/(Vc/3.6); 1 /( 1second * Vc * 1000 meters / 3600 seconds) % mean space between cars
-%5g-ppp page 34, first bullet 60-m to 12 meter spacing
-% 476 cars / 15minutes * (5.7 meters/car) / 65mph / 3 lanes
+
+% GWB bridge data, 19310 vehicles for 3 hours over 7 lane. 
+% It is about 919 vehicles per lane per hour
+% The speed limit is 45 mph, so in an hour they will cover 72420meters.
+% 919 * mean vehicle length (~6.5) = 5983 meters
+% the rest of the distance is spacing which is 66436 meters
+% this spacing for all vehicles so spacing per vehicle is
+% 66436 / 919 = 72.25 meters. The lambda is 1/72.25 = about 0.138
+lambda_vehicle = 0.0138406675; 
+
+
 Vc = Vc/3600; % Vc in m/ms 1000/(3600*1000)
 Vb_1 = Vb_1/3600; % Vc in m/ms
 Vb_2 = Vb_2/3600; % Vc in m/ms
@@ -132,9 +140,33 @@ while veh{numLane}(1).car_end < AoI_start
 end
 toc
 
+
+Parameters = struct('simulation_granularity_ms',delta,...%(ms)
+    'Area_of_interest_interval_m',[AoI_start,AoI_end],... (meters)
+    'mm_rsu_height_m',mm_hBs,...%(m)
+    'mm_seperation_m',mm_seperation,...%(m)
+    'mm_coverage_mean_m',mm_coverage,...%(m)
+    's6_rsu_height_m',s6_hBs,... %(m)
+    's6_coverage_m',s6_coverage,... %(m)
+    's6_rsu_pow_dBm',BSTxPower,... %dBm
+    's6_Veh_pow_dBm',VehTxPower,... %dBm
+    'uplink_downlink_dBm',TxPower,... %dBm
+    'Noise_dBm_Hz',Noise,... %dBm
+    'fc_MHz',fc,... %MHz
+    'BW_Hz',BW,... %Hz
+    'Noise_Fig_dB',NoiseFig,... %dB
+    'num_lane',numLane,... %num
+    'whereisCV',whereisCV,...%num
+    'width_lane',widthLane,... %(m)
+    'comm_veh_speed_kmh',Vc,...%(kmh)
+    'block_veh_speed_kmh_vb1_vb2',[Vb_1,Vb_2],...%(kmh)
+    'lambda_vehicle_per_m',lambda_vehicle);%(1/m)
+
+
+
 save_file_string = ['data/distBS_', num2str(mm_seperation), '-heightBS_', num2str(mm_hBs), '-CapacityAssocDistanceAllLanes',AI];
 save_file_string = strrep(save_file_string,'.',',')
-save(save_file_string, 'AssosiationArray','DistanceArray','s6_CapacityArray','mmWaveBsArray','veh','delta');
+save(save_file_string, 'AssosiationArray','DistanceArray','s6_CapacityArray','mmWaveBsArray','veh','delta','Parameters');
 
 
 
