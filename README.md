@@ -11,8 +11,12 @@ This repository includes the code needed to reproduce the simulation results in
 To run the simulation, just run
 
 ```
-cd CapacitySimulation
-SimulateCapacityAllLanes.m
+*	ssh prince
+*	cd $SCRATCH
+*	rm -rf HighwayVehicular   ## Removes the old simulations
+*	git clone https://github.com/mustafafu/HighwayVehicular.git
+*	cd HighwayVehicular/CapacitySimulation
+*	sbatch --array=0-959 submitAllLanes.sbatch
 ```
 
 in either MATLAB or Octave. The simulation will generate two data files:
