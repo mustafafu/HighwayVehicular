@@ -9,7 +9,7 @@
 module purge
 module load matlab/2019a
 
-cd /scratch/$USER/HigwayVehicular/CapacitySimulation
+cd /scratch/$USER/HighwayVehicular/CapacitySimulation
 
 mkdir -p data
 mkdir -p logs
