@@ -1,4 +1,4 @@
-height = [1.5,2,3,4];
+height = [1.5,2,3,6];
 dist = 75:50:350;
 time_step = 3;
 %% Road Parameters
