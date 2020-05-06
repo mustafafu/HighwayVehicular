@@ -19,7 +19,7 @@ if(isempty(AI))
 else
     NAI = str2num(AI);
     
-    mm_hBs_array = [1.5, 2, 3, 4];
+    mm_hBs_array = [1.5, 2, 3, 6];
     % num_bs in coverage area is mm_coverage * 2 / mm_seperation
     mm_seperation_array = 75:50:350; % how many meters between consecutive base stations
     
@@ -80,8 +80,7 @@ Vc = Vc/3600; % Vc in m/ms 1000/(3600*1000)
 Vb_1 = Vb_1/3600; % Vc in m/ms
 Vb_2 = Vb_2/3600; % Vc in m/ms
 % height parameters in BV Array
-% We can select a uniform RV from 2L vehicle type ??
-%ha = 2; % vehicle antenna height (in meters)
+% 
 
 %% Initialize mmWave Bs, sub6G Bs, vehicles
 Bs_y_pos = widthLane*numLane ; %y axis position of base stations

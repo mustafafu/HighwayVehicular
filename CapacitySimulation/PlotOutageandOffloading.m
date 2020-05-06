@@ -1,7 +1,7 @@
 
-mm_hBs_array = [1.5, 2, 3, 4];
+mm_hBs_array = [1.5, 2, 3, 6];
 % num_bs in coverage area is mm_coverage * 2 / mm_seperation
-mm_seperation_array = 75:25:350; % how many meters between consecutive base stations
+mm_seperation_array = 75:50:350; % how many meters between consecutive base stations
 
 load('MeanOutage_MeanOffloading.mat')
 P_off = zeros(length(mm_seperation_array),length(mm_hBs_array));
@@ -19,7 +19,7 @@ grid on;
 semilogy(mm_seperation_array,P_off(:,2),'-+b');
 semilogy(mm_seperation_array,P_off(:,3),'-*b');
 semilogy(mm_seperation_array,P_off(:,4),'-sb');
-legend('h_{BS} = 1.5m','h_{BS} = 2m','h_{BS} = 3m','h_{BS} = 4m')
+legend('h_{BS} = 1.5m','h_{BS} = 2m','h_{BS} = 3m','h_{BS} = 6m')
 
 
 qos_capacity_requirements = [1.28,2.56,2.88,10,14,29]*10^6; % per second, per vehicle use case requirements
@@ -38,7 +38,7 @@ for ss=1:length(qos_capacity_requirements)
     semilogy(mm_seperation_array,P_out(:,2,ss),'-+r');
     semilogy(mm_seperation_array,P_out(:,3,ss),'-*r');
     semilogy(mm_seperation_array,P_out(:,4,ss),'-sr');
-    legend('h_{BS} = 1.5m','h_{BS} = 2m','h_{BS} = 3m','h_{BS} = 4m')
+    legend('h_{BS} = 1.5m','h_{BS} = 2m','h_{BS} = 3m','h_{BS} = 6m')
     title(['Outage Probability Capacity Requirement = ',num2str(qos_capacity_requirements(ss)/1e6),' Mbps'])
 end
 
