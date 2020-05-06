@@ -27,6 +27,10 @@ These can be used to reproduce Figure 5a and 5b in the referenced paper.
 To run on NYU's High Performance Computing cluster, run
 
 ```
-cd CapacitySimulation
-sbatch --array=0-959 submitAllLanes.sbatch
+*	ssh prince
+*	cd $SCRATCH
+*	rm -rf HighwayVehicular   ## Removes the old simulations
+*	git clone https://github.com/mustafafu/HighwayVehicular.git
+*	cd HighwayVehicular/CapacitySimulation
+*	sbatch --array=0-959 submitAllLanes.sbatch
 ```
