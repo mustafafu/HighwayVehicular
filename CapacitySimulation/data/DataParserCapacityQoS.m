@@ -1,5 +1,5 @@
 height = [1.5,2,3,4];
-dist = 75:25:350;
+dist = 75:50:350;
 qos_capacity_requirements = [1.28,2.56,2.88,10,14,29]*10^6; % per second, per vehicle use case requirements
 %% Road Parameters
 numLane = 3; % number of lanes

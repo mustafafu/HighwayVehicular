@@ -1,5 +1,5 @@
 height = [1.5,2,3,4];
-dist = 75:25:350;
+dist = 75:50:350;
 time_step = 3;
 %% Road Parameters
 numLane = 3; % number of lanes
