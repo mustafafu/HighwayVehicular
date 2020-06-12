@@ -27,17 +27,18 @@ classdef BVArray < handle
                 % vehicle is higher than the critical height at that lane.
                 
                 % Class length
-                lengths = [  4.37,    4.09,  3.3,    12.19,    16.5 ; 
-                            4.8400, 4.9150, 5.0300, 15.2400, 17.3200;
-                             5.31,    5.74,  6.76,   18.29,    18.14];
+                lengths = [  4.37,    4.09,  3.3,    12.19,    16.5 ;
+                    4.8400, 4.9150, 5.0300, 15.2400, 17.3200;
+                    5.31,    5.74,  6.76,   18.29,    18.14];
                 length_sigmas = [0.1566666667, 0.275, 0.5766666667, 1.016666667, 0.2733333333];
                 % Class height
                 heights = [1.4,  1.52,  1.73,  3.96,  4;
-                           1.46,  1.74,  2.32,  4.19,  4.135;
-                            1.52,   1.96,   2.9,   4.42,   4.27];
+                    1.46,  1.74,  2.32,  4.19,  4.135;
+                    1.52,   1.96,   2.9,   4.42,   4.27];
                 height_sigmas = [0.02, 0.07333333333, 0.1933333333, 0.07666666667, 0.045];
                 % Class probabilities
-                vehicleProb = [0.4022268255, 0.4022268255, 0.06385292595, 0.008907301916, 0.1227861212];
+                
+                vehicleProb = [0.2731603749, 0.5313034022, 0.06384961939, 0.008906840661,0.1227797628];
                 % taking random class samples with corresponding probabilities
                 Prob = cumsum([0 vehicleProb]);
                 [~,~,H] = histcounts(rand(1, approx_matrix_size),Prob);
