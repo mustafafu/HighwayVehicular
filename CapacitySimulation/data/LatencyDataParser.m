@@ -9,7 +9,7 @@ if whereisCV>numLane
     exit
 end
 
-for ll=3
+ll=whereisCV;
 
 Duration = cell(length(height),length(dist));
 Blockage_Probability = cell(length(height),length(dist));
@@ -53,4 +53,3 @@ save_file_string = ['Latency-Lane', num2str(ll)];
 save_file_string = strrep(save_file_string,'.',',');
 save(save_file_string, 'Duration','Blockage_Probability','dist','height','time_step');
 
-end
