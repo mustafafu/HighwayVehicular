@@ -30,15 +30,9 @@ for jj = 1:length(height)
             BlockageArrival = (Diff==1);
             BlockageDeparture = (Diff==-1);
             blockageDurations = cell(1,size(Diff,2));
-            for veh_idx = 1: size(Diff,2)
-                starts = find(BlockageArrival(:,veh_idx));
-                ends = find(BlockageDeparture(:,veh_idx));
-                if length(starts) ~= length(ends)
-                    veh_idx
-                end
-                blockageDurations{veh_idx} = (ends-starts).';
-            end
-            num_of_offloaded{ii} = sort(cell2mat(blockageDurations).');
+            [rowA,~] = find(BlockageArrival);
+            [rowD,~] = find(BlockageDeparture);
+            num_of_offloaded{ii} = sort(rowD-rowA);
             mask = (AssosiationArray{ll} ~= 0);
             meaningful_data = AssosiationArray{ll}(mask);
             num_blockages = sum(meaningful_data == -1);
