@@ -40,10 +40,11 @@ for jj = 1:length(height)
         end
         Duration{jj,dd} = num_of_offloaded; %for height jj and distance dd
         Blockage_Probability{jj,dd} = P_b;
+        
     end
 end
 
 save_file_string = ['Latency-Lane', num2str(ll)];
 save_file_string = strrep(save_file_string,'.',',');
-save(save_file_string, 'Duration','Blockage_Probability','dist','height','time_step');
+save(save_file_string, 'Duration','Blockage_Probability','dist','height','time_step','Parameters');
 
