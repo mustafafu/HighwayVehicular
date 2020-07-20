@@ -12,3 +12,4 @@
 !LatencyDataParser.m
 !DataDistanceAnalysis.m
 !DataParserCapacityQoS.m
+!submitLatency.sbatch
