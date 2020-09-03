@@ -10,6 +10,7 @@
 !DataParserDistBs.m
 !sub6G_Serving.m
 !LatencyDataParser.m
+!LatencyParserAllLanes.m
 !DataDistanceAnalysis.m
 !DataParserCapacityQoS.m
 !submitLatency.sbatch
