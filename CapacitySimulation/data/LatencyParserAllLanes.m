@@ -32,7 +32,7 @@ for jj = 1:length(height)
                 Diff(end,:) = Diff(end,:) - (AssosiationArray{ll}(end,:)==-1);
                 BlockageArrival = (Diff==1);
                 BlockageDeparture = (Diff==-1);
-                blockageDurations = cell(1,size(Diff,2));
+%                 blockageDurations = cell(1,size(Diff,2));
                 [rowA,~] = find(BlockageArrival);
                 [rowD,~] = find(BlockageDeparture);
                 num_of_offloaded{ii} = [num_of_offloaded{ii};sort(rowD-rowA)];
