@@ -2,9 +2,9 @@
 
 This repository includes the code needed to reproduce the simulation results in
 
-> Caglar Tunc, Mustafa F. Ozkoc, Shivendra Panwar, 
-> "Millimeter Wave Coverage and Blockage Duration Analysis for Vehicular Communications",
-> IEEE VTC 2019
+> Farrukh Abdinov, Mustafa F. Ozkoc, Fraida Fund, Shivendra S. Panwar,
+> "Can 5G Networks Meet the Requirements ofConnected Vehicle Applications?",
+
 
 ## Run the simulation
 
