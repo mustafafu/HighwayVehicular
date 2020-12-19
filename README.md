@@ -3,7 +3,7 @@
 This repository includes the code needed to reproduce the simulation results in
 
 > Farrukh Abdinov, Mustafa F. Ozkoc, Fraida Fund, Shivendra S. Panwar,
-> "Can 5G Networks Meet the Requirements ofConnected Vehicle Applications?",
+> "Can 5G Networks Meet the Requirements of Connected Vehicle Applications?",
 
 
 ## Run the simulation
